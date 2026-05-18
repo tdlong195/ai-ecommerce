@@ -22,26 +22,7 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
 
-The app uses system fonts so local and CI builds do not depend on downloading external font assets.
-
-## CI/CD
-
-This project includes a GitHub Actions workflow at `.github/workflows/ci-cd.yml`.
-
-The workflow runs on pull requests and pushes to `main` or `master`:
-
-- installs dependencies with `npm ci`
-- runs ESLint with `npm run lint`
-- runs TypeScript checks with `npm run typecheck`
-- builds the Next.js app with `npm run build`
-
-On push events, the deploy job can publish the app to Vercel when these repository secrets are configured:
-
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-- `VERCEL_TOKEN`
-
-If the Vercel secrets are missing, the deploy job logs a skip message and exits without deploying.
+This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
 
