@@ -4,6 +4,7 @@ import Head from "next/head";
 import type { GetStaticPaths, GetStaticProps } from "next";
 import type { Product } from "@/data/products";
 import { products } from "@/data/products";
+import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/utils/formatPrice";
 import styles from "@/styles/ProductDetail.module.css";
 
@@ -12,6 +13,7 @@ type ProductDetailProps = {
 };
 
 export default function ProductDetail({ product }: ProductDetailProps) {
+  const { addToCart } = useCart();
   const formattedPrice = formatPrice(product.price);
   const pageTitle = `${product.name} | Shop Simple Goods`;
 
@@ -44,7 +46,11 @@ export default function ProductDetail({ product }: ProductDetailProps) {
               <h1>{product.name}</h1>
               <p className={styles.price}>{formattedPrice}</p>
               <p className={styles.description}>{product.description}</p>
-              <button className={styles.cartButton} type="button">
+              <button
+                className={styles.cartButton}
+                type="button"
+                onClick={() => addToCart(product.id)}
+              >
                 Add to cart
               </button>
             </div>
