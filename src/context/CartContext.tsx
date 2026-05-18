@@ -4,7 +4,6 @@ import {
   useEffect,
   useMemo,
   useReducer,
-  useState,
   type ReactNode,
 } from "react";
 import { products } from "@/data/products";
@@ -16,6 +15,7 @@ export type CartItem = {
 
 type CartState = {
   items: CartItem[];
+  hasLoadedCart: boolean;
 };
 
 type CartContextValue = {
@@ -40,6 +40,7 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 const initialState: CartState = {
   items: [],
+  hasLoadedCart: false,
 };
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -56,11 +57,13 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 
       if (!existingItem) {
         return {
+          ...state,
           items: [...state.items, { productId: action.productId, quantity: 1 }],
         };
       }
 
       return {
+        ...state,
         items: state.items.map((item) =>
           item.productId === action.productId
             ? { ...item, quantity: item.quantity + 1 }
@@ -79,6 +82,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
 
       return {
+        ...state,
         items: state.items
           .map((item) =>
             item.productId === action.productId
@@ -99,6 +103,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       }
 
       return {
+        ...state,
         items: nextItems,
       };
     }
@@ -106,6 +111,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
     case "load":
       return {
         items: action.items,
+        hasLoadedCart: true,
       };
 
     default:
@@ -176,21 +182,19 @@ type CartProviderProps = {
 
 export function CartProvider({ children }: CartProviderProps) {
   const [state, dispatch] = useReducer(cartReducer, initialState);
-  const [hasLoadedCart, setHasLoadedCart] = useState(false);
 
   useEffect(() => {
     dispatch({ type: "load", items: readCartFromStorage() });
-    setHasLoadedCart(true);
   }, []);
 
   useEffect(() => {
-    if (!hasLoadedCart) {
+    if (!state.hasLoadedCart) {
       return;
     }
 
     // Wait until localStorage has been read before saving the current cart.
     saveCartToStorage(state.items);
-  }, [hasLoadedCart, state.items]);
+  }, [state.hasLoadedCart, state.items]);
 
   const value = useMemo<CartContextValue>(() => {
     const cartCount = state.items.reduce(
